@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th5 19, 2024 lúc 06:59 PM
+-- Thời gian đã tạo: Th5 26, 2024 lúc 10:37 AM
 -- Phiên bản máy phục vụ: 10.4.28-MariaDB
 -- Phiên bản PHP: 8.0.28
 
@@ -39,7 +39,7 @@ CREATE TABLE `category` (
 
 INSERT INTO `category` (`id`, `type`, `shopId`) VALUES
 (1, '2', 2),
-(2, '3', 3);
+(2, '2', 3);
 
 -- --------------------------------------------------------
 
