@@ -4,7 +4,7 @@ const categoryRoutes = require('../controllers/category_controller');
 // Define routes
 //router.get('/login', userController.login);
 //router.get('/get_all', shopController.getAllShop);
-router.get('/:id', categoryRoutes.getShopListByCategoryId);
+router.get('/getShopByCategory', categoryRoutes.getShopListByCategoryId);
 router.post('/create', categoryRoutes.createCategory);
 //router.put('/register', userController.registerUser);
 //router.put('/update_info', userController.updateInfo);

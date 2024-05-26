@@ -49,6 +49,23 @@ const getShopById = (req, res) => {
     res.json({"result": { "code": 200, "message": "Success", "response": results[0] }});
   });
 };
+// Function to handle getting a shop by ID
+const searchShop = (req, res) => {
+  const textSearch = req.body.id;
+  const sql = 'SELECT * FROM shop WHERE id = ?';
+  connection.query(sql, [id], (err, results) => {
+    if (err) {
+      console.error('Error fetching shop:', err);
+      res.status(500).send('Internal Server Error');
+      return;
+    }
+    if (results.length === 0) {
+      res.status(404).send('Shop not found');
+      return;
+    }
+    res.json({"result": { "code": 200, "message": "Success", "response": results[0] }});
+  });
+};
 
 // Function to handle creating a new user
 const createShop = (req, res) => {

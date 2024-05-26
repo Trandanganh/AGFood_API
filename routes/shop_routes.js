@@ -6,7 +6,7 @@ const shopController = require('../controllers/shop_controller');
 router.get('/get_all', shopController.getAllShop);
 router.get('/:id', shopController.getShopById);
 router.post('/create', shopController.createShop);
-//router.put('/register', userController.registerUser);
+router.get('/searchShop', shopController.searchShop);
 //router.put('/update_info', userController.updateInfo);
 //router.delete('/delete', userController.deleteUser);
 

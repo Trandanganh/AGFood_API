@@ -3,74 +3,39 @@
 const mysql = require('mysql');
 const connection = require('../db');
 
-//const login = (req, res) => {
-//  const { username, password } = req.body;
-//  const sql = 'SELECT * FROM user_info WHERE (email = ? OR phone = ?) AND password = ?';
-//  connection.query(sql, [username, username, password], (err, results) => {
-//    if (err) {
-//      console.error('Error logging in:', err);
-//      res.status(500).send('Internal Server Error');
-//      return;
-//    }
-//    if (results.length === 0) {
-//      res.status(401).send('Incorrect username or password');
-//      return;
-//    }
-//    // User credentials are correct
-//    res.json({"result": { "code": 200, "message": "Success", "response": {"id": results[0]["user_id"]} }});
-//  });
-//};
+const getShopListByCategoryId = async (req, res) => {
 
-//const getAllShop = (req, res) => {
-//  connection.query('SELECT * FROM shop', (err, results) => {
-//    if (err) {
-//      console.error('Error fetching users:', err);
-//      res.status(500).send('Internal Server Error');
-//      return;
-//    }
-//    res.json(results);
-//  });
-//};
+    var shopIds = [];
+    var shops = [];
+    const categoryType = parseInt(req.body.type);
+    if (isNaN(categoryType)) {
+        return res.status(400).json({ error: 'Invalid categoryType' });
+      }
 
-// Function to handle getting a shop by ID
-const getShopListByCategoryId = (req, res) => {
-  const id = req.body.type;
-  const sql = 'SELECT * FROM category WHERE type = ?';
-  const sqlShop = 'SELECT * FROM shop WHERE id = ?';
-  var listId = [];
-  var list = [];
+      try {
+        // Truy vấn bảng category để lấy danh sách shopId
+          connection.query('SELECT shopId FROM category WHERE type = ?', [categoryType], (err, resp) => {
+            var list = resp.map(item => item.shopId);
+            if (resp.length == 0) {
+                          return res.json({"result": { "code": 200, "message": "Success", "response": {"total": 0,"response":[]} }});
 
-  connection.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error('Error fetching category:', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    if (results.length === 0) {
-      res.json({"result": { "code": 200, "message": "Success", "response": {"total": 0,"response":[]} }});
-      return;
-    } else {
-        for (let result of results) {
-      const shopId = result["shopId"];
-          listId = listId.push(shopId)
-    }
-        for (let item of list) {
-          const shopId = result["shopId"];
-              listId = listId.push(shopId)
-       connection.query(sqlShop,[shopId], (err, shopResult) => {
-                  if (err) {
-                    console.error('Database error:', err);
-                    shopResult.status(500).json({ "result": { "code": 500, "message": "Internal Server Error" } });
-                    return;
-                  }
-              list = list.push(shopResult)
-                }
-                );
-        }
-          return   res.json({"result": { "code": 200, "message": "Success", "response": {"total": 0,"response":[]} }});
+            }
+              connection.query('SELECT * FROM shop WHERE id IN (?)', [list], (err, response) => {
+              if (response.length == 0) {
+              return res.json({"result": { "code": 200, "message": "Success", "response": {"total": 0,"response":[]} }});
 
-  }});
-};
+              } else {
+              return res.json({"result": { "code": 200, "message": "Success", "response": {"total": response.length,"response": response} }});
+
+              }
+                     });
+         });
+      } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+      }
+}
+
 
 // Function to handle creating a new user
 const createCategory = (req, res) => {
@@ -91,68 +56,8 @@ const createCategory = (req, res) => {
   });
 };
 
-//// Function to handle updating a user
-//const registerUser = (req, res) => {
-//  const userId = req.body.id;
-//  const {phone, name, email, password } = req.body;
-//  const updatedUser = { phone, name, email, password };
-//  const sql = 'UPDATE user_info SET ? WHERE user_id = ?';
-//  connection.query(sql, [updatedUser, userId], (err, result) => {
-//    if (err) {
-//      console.error('Error updating user:', err);
-//      res.status(500).send('Internal Server Error');
-//      return;
-//    }
-//    if (result.affectedRows === 0) {
-//      res.status(404).send('User not found');
-//      return;
-//    }
-//    res.json({"result": { "code": 200, "message": "Success", "response": updatedUser }});
-//  });
-//};
-//const updateInfo = (req, res) => {
-//  const userId = req.body.id;
-//  const {phone, name, email, url, address } = req.body;
-//  const updatedUser = { phone, name, email , url, address};
-//  const sql = 'UPDATE user_info SET ? WHERE user_id = ?';
-//  connection.query(sql, [updatedUser, userId], (err, result) => {
-//    if (err) {
-//      console.error('Error updating user:', err);
-//      res.status(500).send('Internal Server Error');
-//      return;
-//    }
-//    if (result.affectedRows === 0) {
-//      res.status(404).send('User not found');
-//      return;
-//    }
-//    res.json({"result": { "code": 200, "message": "Success", "response": updatedUser }});
-//  });
-//};
-//
-//// Function to handle deleting a user
-//const deleteUser = (req, res) => {
-//  const userId = req.params.id;
-//  const sql = 'DELETE FROM user_info WHERE user_id = ?';
-//  connection.query(sql, userId, (err, result) => {
-//    if (err) {
-//      console.error('Error deleting user:', err);
-//      res.status(500).send('Internal Server Error');
-//      return;
-//    }
-//    if (result.affectedRows === 0) {
-//      res.status(404).send('User not found');
-//      return;
-//    }
-//    res.send('User deleted');
-//  });
-//};
 
 module.exports = {
-//  getAllShop,
   getShopListByCategoryId,
   createCategory,
-//  registerUser,
-//  deleteUser,
-//  login,
-//  updateInfo,
 };
