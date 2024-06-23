@@ -36,7 +36,7 @@ const getAllUsers = (req, res) => {
 const getUserById = (req, res) => {
   const userId = req.body.id;
   const sql = 'SELECT * FROM user_info WHERE user_id = ?';
-  connection.query(sql, userId, (err, results) => {
+  connection.query(sql, [userId], (err, results) => {
     if (err) {
       console.error('Error fetching user:', err);
       res.status(500).send('Internal Server Error');

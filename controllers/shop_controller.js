@@ -21,6 +21,54 @@ const connection = require('../db');
 //  });
 //};
 
+const searchShop = (req, res) => {
+  const textSearch = req.body.textSearch;
+  const searchValue = `%${textSearch}%`;
+  if (!textSearch || typeof textSearch !== 'string') {
+    res.status(400).json({
+      result: {
+        code: 400,
+        message: "Invalid text search value",
+        response: null
+      }
+    });
+    return;
+  }
+
+  const sql = 'SELECT * FROM shop WHERE name LIKE ?';
+  connection.query(sql, [searchValue], (err, results) => {
+    if (err) {
+      console.error('Error fetching shops:', err);
+      res.status(500).json({
+        result: {
+          code: 500,
+          message: 'Internal Server Error',
+          response: null
+        }
+      });
+      return;
+    }
+
+    if (results.length === 0) {
+      res.status(200).json({
+        result: {
+          code: 404,
+          message: 'No shops found',
+          response: null
+        }
+      });
+      return;
+    }
+    res.status(200).json({
+      result: {
+        code: 200,
+        message: 'Success',
+        response: {total: results.length,data:results}
+      }
+    });
+  });
+};
+
 const getAllShop = (req, res) => {
   connection.query('SELECT * FROM shop', (err, results) => {
     if (err) {
@@ -46,26 +94,26 @@ const getShopById = (req, res) => {
       res.status(404).send('Shop not found');
       return;
     }
-    res.json({"result": { "code": 200, "message": "Success", "response": results[0] }});
+    res.json({"result": { "code": 200, "message": "Success", "data": results[0] }});
   });
 };
 // Function to handle getting a shop by ID
-const searchShop = (req, res) => {
-  const textSearch = req.body.id;
-  const sql = 'SELECT * FROM shop WHERE id = ?';
-  connection.query(sql, [id], (err, results) => {
-    if (err) {
-      console.error('Error fetching shop:', err);
-      res.status(500).send('Internal Server Error');
-      return;
-    }
-    if (results.length === 0) {
-      res.status(404).send('Shop not found');
-      return;
-    }
-    res.json({"result": { "code": 200, "message": "Success", "response": results[0] }});
-  });
-};
+//const searchShop = (req, res) => {
+//  const textSearch = req.body.id;
+//  const sql = 'SELECT * FROM shop WHERE id = ?';
+//  connection.query(sql, [id], (err, results) => {
+//    if (err) {
+//      console.error('Error fetching shop:', err);
+//      res.status(500).send('Internal Server Error');
+//      return;
+//    }
+//    if (results.length === 0) {
+//      res.status(404).send('Shop not found');
+//      return;
+//    }
+//    res.json({"result": { "code": 200, "message": "Success", "response": results[0] }});
+//  });
+//};
 
 // Function to handle creating a new user
 const createShop = (req, res) => {
@@ -143,10 +191,11 @@ const createShop = (req, res) => {
 //};
 
 module.exports = {
+
+  searchShop,
   getAllShop,
   getShopById,
-  createShop,
-//  registerUser,
+//  createShop,
 //  deleteUser,
 //  login,
 //  updateInfo,
